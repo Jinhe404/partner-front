@@ -14,8 +14,12 @@
           <el-input v-model="form.confirm" show-password  placeholder="请确认密码" :prefix-icon="Lock"
                     autocomplete="new-password"></el-input>
         </el-form-item>
+        <el-form-item >
+          <el-input v-model="form.name"  placeholder="请输入昵称" :prefix-icon="UserFilled"
+                    ></el-input>
+        </el-form-item>
         <div style="margin-bottom: 0.83em">
-          <el-button style="width: 100%" type="primary" @click="login">注册</el-button>
+          <el-button style="width: 100%" type="primary" @click="register">注册</el-button>
         </div>
         <div style="text-align: right">
           <el-button type="primary" link @click="router.push('/login')">已有账号! 请登录</el-button>
@@ -29,8 +33,9 @@
 import {reactive, ref} from "vue";
 import router from "../router";
 const form = reactive({})
+const store = useUserStore()
 // import { FormInstance, FormRules } from 'element-plus'
-import {User ,Lock} from '@element-plus/icons-vue'
+import {User ,Lock,UserFilled} from '@element-plus/icons-vue'
 import request from "../utils/request";
 import {ElMessage} from "element-plus";
 import {useUserStore} from "../stores/user";
@@ -59,18 +64,15 @@ const rules = reactive({
     {validator: confirmPassword, trigger: 'blur'},
   ],
 })
-const store = useUserStore()
-const login = () => {
-  console.log(ruleFormRef)
+
+const register = () => {
   ruleFormRef.value.validate(valid =>{
     // 当 valid === true 就可以调用登录接口
     if (valid){
-      request.post("/login",form).then(res => {
-        console.log(res)
+      request.post("/register",form).then(res => {
         if (res.code === '200'){
-          // store.$patch({user:res.data})   // res.data 是后台返回的用户数据，存储到缓存里面
           store.setUser(res.data)
-          ElMessage.success("登录成功")
+          ElMessage.success("注册成功")
           router.push('/')
         }else {
           ElMessage.error(res.msg)
